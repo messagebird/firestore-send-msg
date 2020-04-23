@@ -1,0 +1,25 @@
+{
+  "name": "firestore-send-sms",
+  "version": "1.0.0",
+  "main": "functions/lib/index.js",
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rimraf functions/lib",
+    "compile": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate-readme": "firebase ext:info . --markdown > README.md"
+  },
+  "repository": "https://github.com/marcelcorso/firebase-messagebird",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^13.13.0",
+    "firebase-admin": "^8.3.0",
+    "firebase-functions": "^3.2.0",
+    "messagebird": "^3.4.0"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "typescript": "^3.8.3"
+  },
+  "private": true
+}
