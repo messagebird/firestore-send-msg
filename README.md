@@ -1,1 +1,1 @@
-# firebase-send-sms
+# firebase-messagebird
