@@ -73,10 +73,10 @@ params:
     example: ZYpqq7LUUd8ZhfwodPMeilZSK
     required: true
 
-  - param: MAIL_COLLECTION
+  - param: SMS_COLLECTION
     type: string
-    label: Email documents collection
-    default: mail
+    label: SMS documents collection
+    default: sms
     validationRegex: "^[^/]+(/[^/]+/[^/]+)*$"
     validationErrorMessage: Must be a valid Cloud Firestore collection
     required: true
@@ -86,7 +86,7 @@ params:
   - param: DEFAULT_ORIGINATOR
     type: string
     label: Default Originator
-    validationRegex: ^[a-zA-Z1-9]{3,17}$/
+    validationRegex: "^[a-zA-Z1-9]{3,17}$"
     validationErrorMessage: Must be a valid SMS originator (https://support.messagebird.com/hc/en-us/articles/115002628665-What-is-the-originator-)
     required: true
     description: >-
@@ -95,5 +95,4 @@ params:
       * The name of a company or product
       * A number from which it has been sent
       * If you saved the number in your phone contacts, your phone replaces the number with the contact name.
-    example: +3161234567 or MessageBird
-    
+    example: +4461234567 or MessageBird
