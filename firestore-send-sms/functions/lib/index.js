@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const admin = require("firebase-admin");
 const functions = require("firebase-functions");
 const config_1 = require("./config");
-;
 let db;
 let mb;
 let initialized = false;
@@ -25,7 +24,7 @@ function initialize() {
     initialized = true;
     admin.initializeApp();
     db = admin.firestore();
-    mb = require('messagebird')(config_1.default.accessKey);
+    mb = require("messagebird")(config_1.default.accessKey);
 }
 function deliver(payload, ref) {
     return __awaiter(this, void 0, void 0, function* () {
