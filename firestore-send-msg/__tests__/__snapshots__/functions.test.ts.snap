@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`firestore-send-msg functions configuration detected from environment variables 1`] = `
+Object {
+  "accessKey": "aaa",
+  "defaultOriginator": "Marcel",
+  "location": "europe-west1",
+  "msgCollection": "msg",
+}
+`;

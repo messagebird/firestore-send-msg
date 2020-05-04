@@ -1,0 +1,102 @@
+name: firestore-send-msg
+version: 0.0.1
+specVersion: v1beta
+
+displayName: Trigger Omnichannel Message
+description:
+  Sends Omnichannel message based on the contents of a document written to a specified Cloud Firestore collection.
+
+sourceUrl: https://github.com/marcelcorso/firebase-messagebird/tree/master/firestore-send-msg
+releaseNotesUrl: https://github.com/marcelcorso/firebase-messagebird/tree/master/firestore-send-msg/CHANGELOG.md
+
+author:
+  authorName: MessageBird
+  url: https://messagebird.com
+
+contributors:
+  - authorName: Marcel Corso
+    email: marcel@messagebird.com
+    url: https://github.com/marcelcorso
+
+  - authorName: Oleksandr Odinok
+    email: oleksandr.odinok@messagebird.com
+    url: https://github.com/aodinok
+  
+billingRequired: true
+
+roles:
+  - role: datastore.user
+    reason: Allows this extension to access Cloud Firestore to read and process added email documents.
+
+resources:
+  - name: processQueue
+    type: firebaseextensions.v1beta.function
+    description:
+      Processes document changes in the specified Cloud Firestore collection,
+      delivers messages, and updates the document with delivery status information.
+    properties:
+      sourceDirectory: .
+      location: ${LOCATION}
+      eventTrigger:
+        eventType: providers/cloud.firestore/eventTypes/document.write
+        resource: projects/${PROJECT_ID}/databases/(default)/documents/${MSG_COLLECTION}/{id}
+
+params:
+  - param: LOCATION
+    type: select
+    label: Cloud Functions location
+    description: >-
+      Where do you want to deploy the functions created for this extension?
+      You usually want a location close to your database. For help selecting a
+      location, refer to the [location selection
+      guide](https://firebase.google.com/docs/functions/locations).
+    options:
+      - label: Iowa (us-central1)
+        value: us-central1
+      - label: South Carolina (us-east1)
+        value: us-east1
+      - label: Northern Virginia (us-east4)
+        value: us-east4
+      - label: Belgium (europe-west1)
+        value: europe-west1
+      - label: London (europe-west2)
+        value: europe-west2
+      - label: Hong Kong (asia-east2)
+        value: asia-east2
+      - label: Tokyo (asia-northeast1)
+        value: asia-northeast1
+    default: us-central1
+    required: true
+    immutable: true
+
+  - param: ACCESS_KEY
+    type: string
+    label: MessageBird Access Key
+    description: >-
+      A MessageBird's REST api access key
+    example: ZYpqq7LUUd8ZhfwodPMeilZSK
+    required: true
+
+  - param: MSG_COLLECTION
+    type: string
+    label: Collection name that will be used to store messages that should be sent
+    default: messages
+    validationRegex: "^[^/]+(/[^/]+/[^/]+)*$"
+    validationErrorMessage: Must be a valid Cloud Firestore collection
+    required: true
+    description: >-
+      What is the path to the collection that contains the documents used to build and send the messages?
+
+  - param: DEFAULT_ORIGINATOR
+    type: string
+    label: Default Originator
+    validationRegex: "^[a-zA-Z1-9]{3,17}$"
+    validationErrorMessage: Must be a valid originator (https://support.messagebird.com/hc/en-us/articles/115002628665-What-is-the-originator-)
+    required: true
+    description: >-
+      An originator is the name or number from which the message is sent. 
+      When you receive a text message, your phone always tells you something about where the SMS comes from, either it says:
+      * The name of a company or product
+      * A number from which it has been sent
+      * If you saved the number in your phone contacts, your phone replaces the number with the contact name.
+    example: +4461234567 or MessageBird
