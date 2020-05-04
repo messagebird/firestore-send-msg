@@ -1,4 +1,4 @@
 {
-  "packages": ["*", "firestore-translate-text/functions"],
+  "packages": ["*"],
   "version": "0.0.0"
 }

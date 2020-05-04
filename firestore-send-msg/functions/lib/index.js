@@ -21,6 +21,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const admin = __importStar(require("firebase-admin"));
 const functions = __importStar(require("firebase-functions"));
+const messagebird_1 = __importDefault(require("messagebird"));
 const config_1 = __importDefault(require("./config"));
 let db;
 let mb;
@@ -34,7 +35,7 @@ function initialize() {
     initialized = true;
     admin.initializeApp();
     db = admin.firestore();
-    mb = require("messagebird")(config_1.default.accessKey);
+    mb = messagebird_1.default(config_1.default.accessKey);
 }
 function deliver(payload, ref) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -49,13 +50,18 @@ function deliver(payload, ref) {
                 throw new Error("Failed to deliver sms. Expected at least 1 recipient.");
             }
             payload.originator = payload.originator || config_1.default.defaultOriginator;
-            const result = yield mb.messages.create(payload, function (err, response) {
+            yield mb.conversations.start({
+                'to': payload.recipients[0],
+                'channelId': '6730dba0444b46d7976d44b57a8bb9e3',
+                'type': 'text',
+                'content': { 'text': 'Hello From Firebase extension!' }
+            }, function (err, response) {
                 if (err) {
-                    return console.log(err);
+                    throw err;
                 }
-                console.log(response);
+                console.log('got response: ', response);
+                update["messageId"] = response.id;
             });
-            update["messageId"] = result.Id;
         }
         catch (e) {
             update["delivery.state"] = "ERROR";

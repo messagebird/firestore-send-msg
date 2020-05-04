@@ -4,7 +4,8 @@
     "module": "commonjs",
     "noImplicitReturns": true,
     "sourceMap": false,
-    "target": "es6"
+    "target": "es6",
+    "esModuleInterop": true,
   },
   "compileOnSave": true,
   "exclude": ["node_modules"]
