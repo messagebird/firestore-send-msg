@@ -4,5 +4,6 @@ module.exports = async function () {
     ACCESS_KEY: "aaa",
     MSG_COLLECTION: "msg",
     DEFAULT_ORIGINATOR: "Marcel",
+    LOG_LEVEL: "info",
   });
 };
