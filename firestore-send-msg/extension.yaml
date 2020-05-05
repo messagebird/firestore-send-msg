@@ -26,7 +26,7 @@ billingRequired: true
 
 roles:
   - role: datastore.user
-    reason: Allows this extension to access Cloud Firestore to read and process added email documents.
+    reason: Allows this extension to access Cloud Firestore to read and process added documents.
 
 resources:
   - name: processQueue
@@ -86,20 +86,6 @@ params:
     required: true
     description: >-
       What is the path to the collection that contains the documents used to build and send the messages?
-
-  - param: DEFAULT_ORIGINATOR
-    type: string
-    label: Default Originator
-    validationRegex: "^[a-zA-Z1-9]{3,17}$"
-    validationErrorMessage: Must be a valid originator (https://support.messagebird.com/hc/en-us/articles/115002628665-What-is-the-originator-)
-    required: true
-    description: >-
-      An originator is the name or number from which the message is sent. 
-      When you receive a text message, your phone always tells you something about where the SMS comes from, either it says:
-      * The name of a company or product
-      * A number from which it has been sent
-      * If you saved the number in your phone contacts, your phone replaces the number with the contact name.
-    example: +4461234567 or MessageBird
 
   - param: LOG_LEVEL
     type: string

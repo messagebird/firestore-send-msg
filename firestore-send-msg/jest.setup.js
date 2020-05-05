@@ -3,7 +3,6 @@ module.exports = async function () {
     LOCATION: "europe-west1",
     ACCESS_KEY: "aaa",
     MSG_COLLECTION: "msg",
-    DEFAULT_ORIGINATOR: "Marcel",
     LOG_LEVEL: "info",
   });
 };

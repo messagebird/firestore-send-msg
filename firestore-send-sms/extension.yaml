@@ -22,7 +22,7 @@ billingRequired: true
 
 roles:
   - role: datastore.user
-    reason: Allows this extension to access Cloud Firestore to read and process added email documents.
+    reason: Allows this extension to access Cloud Firestore to read and process added documents.
 
 resources:
   - name: processQueue
