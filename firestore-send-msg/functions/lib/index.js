@@ -63,7 +63,7 @@ function deliver(payload, ref) {
             }
             log_1.logInfo(`sending message to channelId: ${payload.channelId}`);
             log_1.logInfo(`with content: ${payload.content}`);
-            yield yield new Promise((resolve, reject) => {
+            yield new Promise((resolve, reject) => {
                 mb.conversations.start(payload, function (err, response) {
                     if (err) {
                         log_1.logWarn(`send failed, got error: ${err}`);

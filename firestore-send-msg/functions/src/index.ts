@@ -5,8 +5,6 @@ import messagebird, { StartConversationParameter, MessageBird } from "messagebir
 import config from "./config";
 import { logInfo, logWarn } from "./log";
 
-// in https://github.com/messagebird/messagebird-nodejs/blob/master/types/messages.d.ts#L7 there is a better type definition
-// we should try to make this plugin a very transparent proxy. Rsing the rest sdk type defs would be a step in that direction.
 interface QueuePayload extends StartConversationParameter {
   messageId?: string;
   delivery?: {
@@ -66,7 +64,7 @@ async function deliver(
     logInfo(`sending message to channelId: ${payload.channelId}`)
     logInfo(`with content: ${payload.content}`)
 
-    await await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       mb.conversations.start(payload, function (err, response) {
         if (err) {
           logWarn(`send failed, got error: ${err}`)
@@ -78,7 +76,6 @@ async function deliver(
         resolve();
       });
     });
-
   } catch (e) {
     logInfo(`updating delivery record with error message`)
     update["delivery.state"] = "ERROR";
