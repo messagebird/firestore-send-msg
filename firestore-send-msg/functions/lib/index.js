@@ -40,7 +40,7 @@ function initialize() {
     db = admin.firestore();
     log_1.logInfo('initializing mb api client...');
     mb = messagebird_1.default(config_1.default.accessKey);
-    log_1.logInfo('initialisation finished successfuly');
+    log_1.logInfo('initialization finished successfuly');
 }
 function deliver(payload, ref) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -63,13 +63,17 @@ function deliver(payload, ref) {
             }
             log_1.logInfo(`sending message to channelId: ${payload.channelId}`);
             log_1.logInfo(`with content: ${payload.content}`);
-            yield mb.conversations.start(payload, function (err, response) {
-                if (err) {
-                    log_1.logWarn(`send failed, got error: ${err}`);
-                    throw err;
-                }
-                log_1.logInfo(`send successfully scheduled, got response: ${response}`);
-                update["messageId"] = response.id;
+            yield yield new Promise((resolve, reject) => {
+                mb.conversations.start(payload, function (err, response) {
+                    if (err) {
+                        log_1.logWarn(`send failed, got error: ${err}`);
+                        return reject(err);
+                    }
+                    log_1.logInfo(`send successfully scheduled, got response: ${response}`);
+                    update["messageId"] = response.id;
+                    update["delivery.state"] = "SUCCESS";
+                    resolve();
+                });
             });
         }
         catch (e) {
@@ -77,7 +81,7 @@ function deliver(payload, ref) {
             update["delivery.state"] = "ERROR";
             update["delivery.error"] = e.toString();
         }
-        return admin.firestore().runTransaction((transaction) => {
+        return db.runTransaction((transaction) => {
             transaction.update(ref, update);
             return Promise.resolve();
         });
@@ -86,7 +90,7 @@ function deliver(payload, ref) {
 function processCreate(snap) {
     return __awaiter(this, void 0, void 0, function* () {
         log_1.logInfo('new msg added, init delivery object for it');
-        return admin.firestore().runTransaction((transaction) => {
+        return db.runTransaction((transaction) => {
             transaction.update(snap.ref, {
                 delivery: {
                     startTime: admin.firestore.FieldValue.serverTimestamp(),
@@ -120,7 +124,7 @@ function processWrite(change) {
             case "PROCESSING":
                 log_1.logInfo('current state is PROCESSING');
                 if (payload.delivery.leaseExpireTime.toMillis() < Date.now()) {
-                    return admin.firestore().runTransaction((transaction) => {
+                    return db.runTransaction((transaction) => {
                         transaction.update(change.after.ref, {
                             "delivery.state": "ERROR",
                             error: "Message processing lease expired.",
@@ -132,7 +136,7 @@ function processWrite(change) {
             case "PENDING":
             case "RETRY":
                 log_1.logInfo('current state is PENDING/RETRY');
-                yield admin.firestore().runTransaction((transaction) => {
+                yield db.runTransaction((transaction) => {
                     transaction.update(change.after.ref, {
                         "delivery.state": "PROCESSING",
                         "delivery.leaseExpireTime": admin.firestore.Timestamp.fromMillis(Date.now() + 60000),
@@ -150,6 +154,7 @@ exports.processQueue = functions.handler.firestore.document.onWrite((change) => 
         yield processWrite(change);
     }
     catch (err) {
+        log_1.logWarn('unexpected error during execution: ', err);
         return null;
     }
 }));

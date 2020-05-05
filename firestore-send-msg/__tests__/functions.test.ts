@@ -3,7 +3,7 @@ import * as firebase from '@firebase/testing';
 import functionsConfig from "../functions/src/config";
 import * as exportedFunctions from "../functions/src";
 
-const projectId = 'test-firebase-send-msg'
+const projectId = 'conversations-example'
 const app = firebase.initializeTestApp({
   projectId,
   auth: { uid: "alice", email: "alice@example.com" }
@@ -28,12 +28,16 @@ describe("firestore-send-msg", () => {
     expect(exportedFunctions.processQueue).toBeInstanceOf(Function);
   });
 
+  // you need to have emulator runnning for this test
   test("add to msg collection triggers processQueue function", async () => {
     // add new message to collection
     await db.collection('msg').add({
-      body: 'test sms body',
-      recipients: ['479056999'],
-      originator: 'test'
+      channelId: '1234567890',
+      type: 'text',
+      content: {
+        text: 'test message content'
+      },
+      to: '+380971234567',
     });
 
     // wait for extension to trigger

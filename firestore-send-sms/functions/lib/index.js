@@ -21,7 +21,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const admin = __importStar(require("firebase-admin"));
 const functions = __importStar(require("firebase-functions"));
+const messagebird_1 = __importDefault(require("messagebird"));
 const config_1 = __importDefault(require("./config"));
+const log_1 = require("./log");
 let db;
 let mb;
 let initialized = false;
@@ -32,9 +34,13 @@ function initialize() {
     if (initialized === true)
         return;
     initialized = true;
+    log_1.logInfo('initializing app...');
     admin.initializeApp();
+    log_1.logInfo('initializing db...');
     db = admin.firestore();
-    mb = require("messagebird")(config_1.default.accessKey);
+    log_1.logInfo('initializing messagebird client...');
+    mb = messagebird_1.default(config_1.default.accessKey);
+    log_1.logInfo('initialization finished successfuly');
 }
 function deliver(payload, ref) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -49,15 +55,20 @@ function deliver(payload, ref) {
                 throw new Error("Failed to deliver sms. Expected at least 1 recipient.");
             }
             payload.originator = payload.originator || config_1.default.defaultOriginator;
-            const result = yield mb.messages.create(payload, function (err, response) {
-                if (err) {
-                    return console.log(err);
-                }
-                console.log(response);
+            yield new Promise((resolve, reject) => {
+                mb.messages.create(payload, function (err, response) {
+                    if (err) {
+                        return reject(err);
+                    }
+                    log_1.logInfo(`send successfully scheduled, got response: ${response}`);
+                    update["messageId"] = response.id;
+                    update["delivery.state"] = "SUCCESS";
+                    resolve();
+                });
             });
-            update["messageId"] = result.Id;
         }
         catch (e) {
+            log_1.logInfo(`updating delivery record with error message`);
             update["delivery.state"] = "ERROR";
             update["delivery.error"] = e.toString();
         }
@@ -69,6 +80,7 @@ function deliver(payload, ref) {
 }
 function processCreate(snap) {
     return __awaiter(this, void 0, void 0, function* () {
+        log_1.logInfo('new msg added, init delivery object for it');
         return admin.firestore().runTransaction((transaction) => {
             transaction.update(snap.ref, {
                 delivery: {
@@ -84,19 +96,25 @@ function processCreate(snap) {
 }
 function processWrite(change) {
     return __awaiter(this, void 0, void 0, function* () {
+        log_1.logInfo('processing write');
         if (!change.after.exists) {
+            log_1.logInfo('ignoring delete');
             return null;
         }
         if (!change.before.exists && change.after.exists) {
+            log_1.logInfo('process create');
             return processCreate(change.after);
         }
+        log_1.logInfo('processing update');
         const payload = change.after.data();
         switch (payload.delivery.state) {
             case "SUCCESS":
             case "ERROR":
+                log_1.logInfo('current state is SUCCESS/ERROR');
                 return null;
             case "PROCESSING":
-                if (payload.delivery.leaseExpireTime.toMillis() < Date.now()) {
+                log_1.logInfo('current state is PROCESSING');
+                if (payload.delivery.leaseExpireTime && payload.delivery.leaseExpireTime.toMillis() < Date.now()) {
                     return admin.firestore().runTransaction((transaction) => {
                         transaction.update(change.after.ref, {
                             "delivery.state": "ERROR",
@@ -108,6 +126,7 @@ function processWrite(change) {
                 return null;
             case "PENDING":
             case "RETRY":
+                log_1.logInfo('current state is PENDING/RETRY');
                 yield admin.firestore().runTransaction((transaction) => {
                     transaction.update(change.after.ref, {
                         "delivery.state": "PROCESSING",
@@ -115,6 +134,7 @@ function processWrite(change) {
                     });
                     return Promise.resolve();
                 });
+                log_1.logInfo('record set to PROCESSING state, trying to deliver the message');
                 return deliver(payload, change.after.ref);
         }
     });
@@ -125,6 +145,7 @@ exports.processQueue = functions.handler.firestore.document.onWrite((change) => 
         yield processWrite(change);
     }
     catch (err) {
+        log_1.logWarn('unexpected error during execution: ', err);
         return null;
     }
 }));

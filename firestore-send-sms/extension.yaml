@@ -96,3 +96,11 @@ params:
       * A number from which it has been sent
       * If you saved the number in your phone contacts, your phone replaces the number with the contact name.
     example: +4461234567 or MessageBird
+
+  - param: LOG_LEVEL
+    type: string
+    label: Log level
+    description: >-
+      Log level, can be one of "info"/"warn", default is "warn"
+    example: error
+    required: false

@@ -35,7 +35,7 @@ function initialize() {
   db = admin.firestore();
   logInfo('initializing mb api client...')
   mb = messagebird(config.accessKey);
-  logInfo('initialisation finished successfuly')
+  logInfo('initialization finished successfuly')
 }
 
 async function deliver(
@@ -66,13 +66,17 @@ async function deliver(
     logInfo(`sending message to channelId: ${payload.channelId}`)
     logInfo(`with content: ${payload.content}`)
 
-    await mb.conversations.start(payload, function (err, response) {
-      if (err) {
-        logWarn(`send failed, got error: ${err}`)
-        throw err;
-      }
-      logInfo(`send successfully scheduled, got response: ${response}`)
-      update["messageId"] = response.id;
+    await await new Promise((resolve, reject) => {
+      mb.conversations.start(payload, function (err, response) {
+        if (err) {
+          logWarn(`send failed, got error: ${err}`)
+          return reject(err);
+        }
+        logInfo(`send successfully scheduled, got response: ${response}`)
+        update["messageId"] = response.id;
+        update["delivery.state"] = "SUCCESS";
+        resolve();
+      });
     });
 
   } catch (e) {
@@ -81,7 +85,7 @@ async function deliver(
     update["delivery.error"] = e.toString();
   }
 
-  return admin.firestore().runTransaction((transaction) => {
+  return db.runTransaction((transaction) => {
     transaction.update(ref, update);
     return Promise.resolve();
   });
@@ -89,7 +93,7 @@ async function deliver(
 
 async function processCreate(snap: FirebaseFirestore.DocumentSnapshot) {
   logInfo('new msg added, init delivery object for it')
-  return admin.firestore().runTransaction((transaction) => {
+  return db.runTransaction((transaction) => {
     transaction.update(snap.ref, {
       delivery: {
         startTime: admin.firestore.FieldValue.serverTimestamp(),
@@ -125,7 +129,7 @@ async function processWrite(change) {
     case "PROCESSING":
       logInfo('current state is PROCESSING')
       if (payload.delivery.leaseExpireTime.toMillis() < Date.now()) {
-        return admin.firestore().runTransaction((transaction) => {
+        return db.runTransaction((transaction) => {
           transaction.update(change.after.ref, {
             "delivery.state": "ERROR",
             error: "Message processing lease expired.",
@@ -137,7 +141,7 @@ async function processWrite(change) {
     case "PENDING":
     case "RETRY":
       logInfo('current state is PENDING/RETRY')
-      await admin.firestore().runTransaction((transaction) => {
+      await db.runTransaction((transaction) => {
         transaction.update(change.after.ref, {
           "delivery.state": "PROCESSING",
           "delivery.leaseExpireTime": admin.firestore.Timestamp.fromMillis(
@@ -157,6 +161,7 @@ export const processQueue = functions.handler.firestore.document.onWrite(
     try {
       await processWrite(change);
     } catch (err) {
+      logWarn('unexpected error during execution: ', err);
       return null;
     }
   }
