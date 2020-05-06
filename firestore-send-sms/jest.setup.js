@@ -4,6 +4,6 @@ module.exports = async function () {
     ACCESS_KEY: "aaa",
     SMS_COLLECTION: "sms",
     DEFAULT_ORIGINATOR: "Marcel",
-    LOG_LEVEL: "info",
+    LOG_LEVEL: "warn",
   });
 };

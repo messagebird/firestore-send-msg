@@ -4,7 +4,7 @@ exports[`firestore-send-msg functions configuration detected from environment va
 Object {
   "accessKey": "aaa",
   "location": "europe-west1",
-  "logLevel": "info",
+  "logLevel": "warn",
   "msgCollection": "msg",
 }
 `;

@@ -1,4 +1,4 @@
-# Trigger Omnichannel Message
+# Trigger Omnichannel Message
 
 **Description**: Sends Omnichannel message based on the contents of a document written to a specified Cloud Firestore collection.
 
