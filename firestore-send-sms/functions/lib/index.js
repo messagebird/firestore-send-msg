@@ -60,7 +60,8 @@ function deliver(payload, ref) {
                     if (err) {
                         return reject(err);
                     }
-                    log_1.logInfo(`send successfully scheduled, got response: ${response}`);
+                    // TODO: update delivery state when message delivered or delivery failed, we may need to use status URL for this
+                    log_1.logInfo(`send successfully scheduled, got response: `, response);
                     update["messageId"] = response.id;
                     update["delivery.state"] = "SUCCESS";
                     resolve();

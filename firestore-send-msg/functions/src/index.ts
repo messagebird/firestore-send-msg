@@ -62,7 +62,7 @@ async function deliver(
     }
 
     logInfo(`sending message to channelId: ${payload.channelId}`)
-    logInfo(`with content: ${payload.content}`)
+    logInfo(`with content:`, payload.content)
 
     await new Promise((resolve, reject) => {
       mb.conversations.start(payload, function (err, response) {
@@ -103,7 +103,7 @@ async function processCreate(snap: FirebaseFirestore.DocumentSnapshot) {
   });
 }
 
-async function processWrite(change) {
+async function processWrite(change: functions.Change<functions.firestore.DocumentSnapshot>) {
   logInfo('processing write')
   if (!change.after.exists) {
     logInfo('ignoring delete')

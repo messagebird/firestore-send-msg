@@ -1,51 +1,235 @@
+import * as functions from "firebase-functions";
+import functionsTestInit from "firebase-functions-test";
 
-import * as firebase from '@firebase/testing';
 import functionsConfig from "../functions/src/config";
 import * as exportedFunctions from "../functions/src";
 
-const projectId = 'conversations-example'
-const app = firebase.initializeTestApp({
-  projectId,
-  auth: { uid: "alice", email: "alice@example.com" }
-});
-const db = app.firestore();
+const functionsTest = functionsTestInit();
+
+const mockQueryResponse = jest.fn()
+mockQueryResponse.mockResolvedValue([
+  {
+    id: 1
+  }
+])
+const updateMock = jest.fn()
+
+jest.mock('firebase-admin', () => ({
+  initializeApp: jest.fn(),
+  firestore: function firestore () {
+    (firestore as any).FieldValue = {
+      increment: v => v, 
+      serverTimestamp: () => 'serverTimestamp',
+    };
+    (firestore as any).Timestamp = {
+      fromMillis: () => 0
+    }
+    return {
+      collection: jest.fn(path => ({
+        where: jest.fn(queryString => ({
+          get: mockQueryResponse
+        }))
+      })),
+      runTransaction: jest.fn((transaction) => transaction({
+         update: updateMock
+       })),
+     }
+  }
+}))
+
+jest.mock('messagebird', () => () => ({
+  conversations: {
+    start: (payload, callback) => {
+      callback(null, { id: 'fakeConversationsResponse' });
+    }
+  }
+}));
 
 describe("firestore-send-msg", () => {
-  beforeEach(async () => {
-    // Clean database before each test
-    await firebase.clearFirestoreData({ projectId });
+  beforeEach(() => {
+    updateMock.mockReset();
   });
 
-  afterAll(async () => {
-    await Promise.all(firebase.apps().map(app => app.delete()));
-  });
-
-  test("functions configuration detected from environment variables", async () => {
+  it("functions configuration detected from environment variables", async () => {
     expect(functionsConfig).toMatchSnapshot();
   });
 
-  test("functions are exported", () => {
+  it("functions are exported", () => {
     expect(exportedFunctions.processQueue).toBeInstanceOf(Function);
   });
 
-  // you need to have emulator runnning for this test
-  test("add to msg collection triggers processQueue function", async () => {
-    // add new message to collection
-    await db.collection('msg').add({
-      channelId: '1234567890',
-      type: 'text',
-      content: {
-        text: 'test message content'
+  it('successfully invokes function and ignores delete', async () => {
+    const wrapped = functionsTest.wrap(exportedFunctions.processQueue);
+    const change: functions.Change<functions.firestore.DocumentSnapshot> = {
+      before: {
+        id: '123',
+        ref: null,
+        exists: true,
+        readTime: null,
+        data: jest.fn(),
+        get: jest.fn(),
+        isEqual: jest.fn(),
       },
-      to: '+380971234567',
+      after: {
+        id: '123',
+        ref: null,
+        exists: false,
+        readTime: null,
+        data: jest.fn(),
+        get: jest.fn(),
+        isEqual: jest.fn(),
+      }
+    };
+    expect(await wrapped(change)).toBeUndefined();
+  })
+
+  it('successfully invokes function and processes create', async () => {
+    const wrapped = functionsTest.wrap(exportedFunctions.processQueue);
+    const change: functions.Change<functions.firestore.DocumentSnapshot> = {
+      before: {
+        id: '123',
+        ref: null,
+        exists: false,
+        readTime: null,
+        data: jest.fn(),
+        get: jest.fn(),
+        isEqual: jest.fn(),
+      },
+      after: {
+        id: '123',
+        ref: null,
+        exists: true,
+        readTime: null,
+        data: jest.fn(),
+        get: jest.fn(),
+        isEqual: jest.fn(),
+      }
+    };
+    expect(await wrapped(change)).toBeUndefined();
+    expect(updateMock).toHaveBeenCalledWith(null, {
+      delivery: {
+        attempts: 0,
+        error: null,
+        startTime: "serverTimestamp",
+        state: "PENDING"
+      }
     });
+  })
 
-    // wait for extension to trigger
-    await new Promise((r) => setTimeout(r, 2000));
+  it('successfully invokes function and ignores update with finished status', async () => {
+    const wrapped = functionsTest.wrap(exportedFunctions.processQueue);
+    const change: functions.Change<functions.firestore.DocumentSnapshot> = {
+      before: {
+        id: '123',
+        ref: null,
+        exists: true,
+        readTime: null,
+        data: jest.fn(),
+        get: jest.fn(),
+        isEqual: jest.fn(),
+      },
+      after: {
+        id: '123',
+        ref: null,
+        exists: true,
+        readTime: null,
+        data: jest.fn(() => ({
+          delivery: {
+            state: 'SUCCESS'
+          }
+        })),
+        get: jest.fn(),
+        isEqual: jest.fn(),
+      }
+    };
+    expect(await wrapped(change)).toBeUndefined();
+  })
 
-    let allMsgs = await db.collection('msg').get();
-    for(const doc of allMsgs.docs){
-      console.log(doc.id, '=>', doc.data());
-    }
-  });
+  it('successfully invokes function and processes update in pending state', async () => {
+    const wrapped = functionsTest.wrap(exportedFunctions.processQueue);
+    const change: functions.Change<functions.firestore.DocumentSnapshot> = {
+      before: {
+        id: '123',
+        ref: null,
+        exists: true,
+        readTime: null,
+        data: jest.fn(),
+        get: jest.fn(),
+        isEqual: jest.fn(),
+      },
+      after: {
+        id: '123',
+        ref: null,
+        exists: true,
+        readTime: null,
+        data: jest.fn(() => ({
+          delivery: {
+            state: 'PENDING'
+          }
+        })),
+        get: jest.fn(),
+        isEqual: jest.fn(),
+      }
+    };
+    expect(await wrapped(change)).toBeUndefined();
+    expect(updateMock).toHaveBeenCalledWith(null, {
+      "delivery.state": "PROCESSING",
+      "delivery.leaseExpireTime": 0,
+    });
+    expect(updateMock).toHaveBeenCalledWith(null, {
+      "delivery.attempts": 1,
+      "delivery.endTime": "serverTimestamp",
+      "delivery.leaseExpireTime": null,
+      "delivery.state": "ERROR",
+      "delivery.error": "Error: Failed to deliver message. ChannelId is not defined."
+    });
+  })
+
+  it('should send message and write update delivery status with success', async () => {
+    const wrapped = functionsTest.wrap(exportedFunctions.processQueue);
+    const change: functions.Change<functions.firestore.DocumentSnapshot> = {
+      before: {
+        id: '123',
+        ref: null,
+        exists: true,
+        readTime: null,
+        data: jest.fn(),
+        get: jest.fn(),
+        isEqual: jest.fn(),
+      },
+      after: {
+        id: '123',
+        ref: null,
+        exists: true,
+        readTime: null,
+        data: jest.fn(() => ({
+          channelId: "234567",
+          content: {
+            text: "test msg content"
+          },
+          type: "text",
+          to: "+380975483753",
+          delivery: {
+            state: 'PENDING'
+          }
+        })),
+        get: jest.fn(),
+        isEqual: jest.fn(),
+      }
+    };
+    expect(await wrapped(change)).toBeUndefined();
+    expect(updateMock).toHaveBeenCalledWith(null, {
+      "delivery.state": "PROCESSING",
+      "delivery.leaseExpireTime": 0,
+    });
+    expect(updateMock).toHaveBeenCalledWith(null, {
+      "delivery.attempts": 1,
+      "delivery.endTime": "serverTimestamp",
+      "delivery.leaseExpireTime": null,
+      "delivery.state": "SUCCESS",
+      "messageId": "fakeConversationsResponse",
+      "delivery.error": null
+    });
+  })
+  
 });

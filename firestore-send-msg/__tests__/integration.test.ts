@@ -8,7 +8,9 @@ const app = firebase.initializeTestApp({
 });
 const db = app.firestore();
 
-describe("firestore-send-msg integration test", () => {
+// you need to have firebase emulator runnning for this tests
+// firebase ext:dev:emulators:start --test-params=./test-params.env --project=conversations-example
+describe.skip("firestore-send-msg integration test", () => {
   beforeEach(async () => {
     // Clean database before each test
     await firebase.clearFirestoreData({ projectId });
@@ -18,8 +20,7 @@ describe("firestore-send-msg integration test", () => {
     await Promise.all(firebase.apps().map(app => app.delete()));
   });
 
-  // you need to have emulator runnning for this test
-  it.skip("add to msg collection triggers processQueue function", async () => {
+  it("add to msg collection triggers processQueue function", async () => {
     // add new message to collection
     await db.collection('msg').add({
       channelId: '6730dba0444b46d7976d44b57a8bb9e3',

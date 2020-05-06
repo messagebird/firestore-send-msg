@@ -62,7 +62,7 @@ function deliver(payload, ref) {
                 throw new Error("Failed to deliver message. Message content is empty.");
             }
             log_1.logInfo(`sending message to channelId: ${payload.channelId}`);
-            log_1.logInfo(`with content: ${payload.content}`);
+            log_1.logInfo(`with content:`, payload.content);
             yield new Promise((resolve, reject) => {
                 mb.conversations.start(payload, function (err, response) {
                     if (err) {

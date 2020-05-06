@@ -59,7 +59,8 @@ async function deliver(
         if (err) {
           return reject(err);
         }
-        logInfo(`send successfully scheduled, got response: ${response}`)
+        // TODO: update delivery state when message delivered or delivery failed, we may need to use status URL for this
+        logInfo(`send successfully scheduled, got response: `, response)
         update["messageId"] = response.id;
         update["delivery.state"] = "SUCCESS";
         resolve();
@@ -93,7 +94,7 @@ async function processCreate(snap: FirebaseFirestore.DocumentSnapshot) {
   });
 }
 
-async function processWrite(change) {
+async function processWrite(change: functions.Change<functions.firestore.DocumentSnapshot>) {
   logInfo('processing write')
   if (!change.after.exists) {
     logInfo('ignoring delete')
