@@ -39,7 +39,7 @@ function initialize() {
 async function deliver(
   payload: QueuePayload,
   ref: FirebaseFirestore.DocumentReference
-): Promise<any> {
+): Promise<void> {
   const update = {
     "delivery.attempts": admin.firestore.FieldValue.increment(1),
     "delivery.endTime": admin.firestore.FieldValue.serverTimestamp(),
