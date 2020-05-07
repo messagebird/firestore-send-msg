@@ -34,9 +34,13 @@ describe.skip("firestore-send-msg integration test", () => {
     // wait for extension to trigger
     await new Promise((r) => setTimeout(r, 2000));
 
+    // should update delivery with state
     let allMsgs = await db.collection('msg').get();
-    for(const doc of allMsgs.docs){
-      console.log(doc.id, '=>', doc.data());
+    for(const doc of allMsgs.docs) {
+      const data = doc.data()
+      expect(data).toHaveProperty('delivery');
+      expect(data.delivery).toHaveProperty('state');
+      expect(data.delivery.state).toEqual('SUCCESS');
     }
   });
 });
