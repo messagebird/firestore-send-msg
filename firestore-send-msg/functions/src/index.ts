@@ -70,7 +70,7 @@ async function deliver(
     logInfo(`with content:`, payload.content);
 
     await new Promise((resolve, reject) => {
-      mb.conversations.start(payload, function(err, response) {
+      mb.conversations.start(payload, function (err, response) {
         if (err) {
           logWarn(`send failed, got error: ${err}`);
           return reject(err);

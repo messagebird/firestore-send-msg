@@ -55,7 +55,7 @@ async function deliver(
     payload.originator = payload.originator || config.defaultOriginator;
 
     await new Promise((resolve, reject) => {
-      mb.messages.create(payload, function(err, response) {
+      mb.messages.create(payload, function (err, response) {
         if (err) {
           return reject(err);
         }
