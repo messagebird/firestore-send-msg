@@ -6,43 +6,45 @@ import * as exportedFunctions from "../functions/src";
 
 const functionsTest = functionsTestInit();
 
-const mockQueryResponse = jest.fn()
+const mockQueryResponse = jest.fn();
 mockQueryResponse.mockResolvedValue([
   {
-    id: 1
-  }
-])
-const updateMock = jest.fn()
+    id: 1,
+  },
+]);
+const updateMock = jest.fn();
 
-jest.mock('firebase-admin', () => ({
+jest.mock("firebase-admin", () => ({
   initializeApp: jest.fn(),
-  firestore: function firestore () {
+  firestore: function firestore() {
     (firestore as any).FieldValue = {
-      increment: v => v, 
-      serverTimestamp: () => 'serverTimestamp',
+      increment: (v) => v,
+      serverTimestamp: () => "serverTimestamp",
     };
     (firestore as any).Timestamp = {
-      fromMillis: () => 0
-    }
+      fromMillis: () => 0,
+    };
     return {
-      collection: jest.fn(path => ({
-        where: jest.fn(queryString => ({
-          get: mockQueryResponse
-        }))
+      collection: jest.fn((path) => ({
+        where: jest.fn((queryString) => ({
+          get: mockQueryResponse,
+        })),
       })),
-      runTransaction: jest.fn((transaction) => transaction({
-         update: updateMock
-       })),
-     }
-  }
-}))
+      runTransaction: jest.fn((transaction) =>
+        transaction({
+          update: updateMock,
+        })
+      ),
+    };
+  },
+}));
 
-jest.mock('messagebird', () => () => ({
+jest.mock("messagebird", () => () => ({
   messages: {
     create: (payload, callback) => {
-      callback(null, { id: 'fakeSMSResponse' });
-    }
-  }
+      callback(null, { id: "fakeSMSResponse" });
+    },
+  },
 }));
 
 describe("firestore-send-sms", () => {
@@ -58,11 +60,11 @@ describe("firestore-send-sms", () => {
     expect(exportedFunctions.processQueue).toBeInstanceOf(Function);
   });
 
-  it('successfully invokes function and ignores delete', async () => {
+  it("successfully invokes function and ignores delete", async () => {
     const wrapped = functionsTest.wrap(exportedFunctions.processQueue);
     const change: functions.Change<functions.firestore.DocumentSnapshot> = {
       before: {
-        id: '123',
+        id: "123",
         ref: null,
         exists: true,
         readTime: null,
@@ -71,23 +73,23 @@ describe("firestore-send-sms", () => {
         isEqual: jest.fn(),
       },
       after: {
-        id: '123',
+        id: "123",
         ref: null,
         exists: false,
         readTime: null,
         data: jest.fn(),
         get: jest.fn(),
         isEqual: jest.fn(),
-      }
+      },
     };
     expect(await wrapped(change)).toBeUndefined();
-  })
+  });
 
-  it('successfully invokes function and processes create', async () => {
+  it("successfully invokes function and processes create", async () => {
     const wrapped = functionsTest.wrap(exportedFunctions.processQueue);
     const change: functions.Change<functions.firestore.DocumentSnapshot> = {
       before: {
-        id: '123',
+        id: "123",
         ref: null,
         exists: false,
         readTime: null,
@@ -96,14 +98,14 @@ describe("firestore-send-sms", () => {
         isEqual: jest.fn(),
       },
       after: {
-        id: '123',
+        id: "123",
         ref: null,
         exists: true,
         readTime: null,
         data: jest.fn(),
         get: jest.fn(),
         isEqual: jest.fn(),
-      }
+      },
     };
     expect(await wrapped(change)).toBeUndefined();
     expect(updateMock).toHaveBeenCalledWith(null, {
@@ -111,16 +113,16 @@ describe("firestore-send-sms", () => {
         attempts: 0,
         error: null,
         startTime: "serverTimestamp",
-        state: "PENDING"
-      }
+        state: "PENDING",
+      },
     });
-  })
+  });
 
-  it('successfully invokes function and ignores update with finished status', async () => {
+  it("successfully invokes function and ignores update with finished status", async () => {
     const wrapped = functionsTest.wrap(exportedFunctions.processQueue);
     const change: functions.Change<functions.firestore.DocumentSnapshot> = {
       before: {
-        id: '123',
+        id: "123",
         ref: null,
         exists: true,
         readTime: null,
@@ -129,27 +131,27 @@ describe("firestore-send-sms", () => {
         isEqual: jest.fn(),
       },
       after: {
-        id: '123',
+        id: "123",
         ref: null,
         exists: true,
         readTime: null,
         data: jest.fn(() => ({
           delivery: {
-            state: 'SUCCESS'
-          }
+            state: "SUCCESS",
+          },
         })),
         get: jest.fn(),
         isEqual: jest.fn(),
-      }
+      },
     };
     expect(await wrapped(change)).toBeUndefined();
-  })
+  });
 
-  it('successfully invokes function and processes update in pending state', async () => {
+  it("successfully invokes function and processes update in pending state", async () => {
     const wrapped = functionsTest.wrap(exportedFunctions.processQueue);
     const change: functions.Change<functions.firestore.DocumentSnapshot> = {
       before: {
-        id: '123',
+        id: "123",
         ref: null,
         exists: true,
         readTime: null,
@@ -158,19 +160,19 @@ describe("firestore-send-sms", () => {
         isEqual: jest.fn(),
       },
       after: {
-        id: '123',
+        id: "123",
         ref: null,
         exists: true,
         readTime: null,
         data: jest.fn(() => ({
           recipients: [],
           delivery: {
-            state: 'PENDING'
-          }
+            state: "PENDING",
+          },
         })),
         get: jest.fn(),
         isEqual: jest.fn(),
-      }
+      },
     };
     expect(await wrapped(change)).toBeUndefined();
     expect(updateMock).toHaveBeenCalledWith(null, {
@@ -182,16 +184,16 @@ describe("firestore-send-sms", () => {
       "delivery.endTime": "serverTimestamp",
       "delivery.leaseExpireTime": null,
       "delivery.state": "ERROR",
-      "delivery.error": "Error: Failed to deliver sms. Expected at least 1 recipient."
+      "delivery.error":
+        "Error: Failed to deliver sms. Expected at least 1 recipient.",
     });
-  })
-  
+  });
 
-  it('should send message and write update delivery status with success', async () => {
+  it("should send message and write update delivery status with success", async () => {
     const wrapped = functionsTest.wrap(exportedFunctions.processQueue);
     const change: functions.Change<functions.firestore.DocumentSnapshot> = {
       before: {
-        id: '123',
+        id: "123",
         ref: null,
         exists: true,
         readTime: null,
@@ -200,21 +202,21 @@ describe("firestore-send-sms", () => {
         isEqual: jest.fn(),
       },
       after: {
-        id: '123',
+        id: "123",
         ref: null,
         exists: true,
         readTime: null,
         data: jest.fn(() => ({
-          body: 'test message content',
-          originator: 'JestTest',
-          recipients: ['+380973139857'],
+          body: "test message content",
+          originator: "JestTest",
+          recipients: ["+380973139857"],
           delivery: {
-            state: 'PENDING'
-          }
+            state: "PENDING",
+          },
         })),
         get: jest.fn(),
         isEqual: jest.fn(),
-      }
+      },
     };
     expect(await wrapped(change)).toBeUndefined();
     expect(updateMock).toHaveBeenCalledWith(null, {
@@ -226,9 +228,8 @@ describe("firestore-send-sms", () => {
       "delivery.endTime": "serverTimestamp",
       "delivery.leaseExpireTime": null,
       "delivery.state": "SUCCESS",
-      "messageId": "fakeSMSResponse",
-      "delivery.error": null
+      messageId: "fakeSMSResponse",
+      "delivery.error": null,
     });
-  })
-  
+  });
 });

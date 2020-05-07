@@ -34,13 +34,13 @@ function initialize() {
     if (initialized === true)
         return;
     initialized = true;
-    log_1.logInfo('initializing app...');
+    log_1.logInfo("initializing app...");
     admin.initializeApp();
-    log_1.logInfo('initializing db...');
+    log_1.logInfo("initializing db...");
     db = admin.firestore();
-    log_1.logInfo('initializing mb api client...');
+    log_1.logInfo("initializing mb api client...");
     mb = messagebird_1.default(config_1.default.accessKey);
-    log_1.logInfo('initialization finished successfuly');
+    log_1.logInfo("initialization finished successfuly");
 }
 function deliver(payload, ref) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -50,7 +50,7 @@ function deliver(payload, ref) {
             "delivery.error": null,
             "delivery.leaseExpireTime": null,
         };
-        log_1.logInfo('delivery attempt');
+        log_1.logInfo("delivery attempt");
         try {
             if (!payload.channelId) {
                 throw new Error("Failed to deliver message. ChannelId is not defined.");
@@ -89,7 +89,7 @@ function deliver(payload, ref) {
 }
 function processCreate(snap) {
     return __awaiter(this, void 0, void 0, function* () {
-        log_1.logInfo('new msg added, init delivery object for it');
+        log_1.logInfo("new msg added, init delivery object for it");
         return db.runTransaction((transaction) => {
             transaction.update(snap.ref, {
                 delivery: {
@@ -105,24 +105,24 @@ function processCreate(snap) {
 }
 function processWrite(change) {
     return __awaiter(this, void 0, void 0, function* () {
-        log_1.logInfo('processing write');
+        log_1.logInfo("processing write");
         if (!change.after.exists) {
-            log_1.logInfo('ignoring delete');
+            log_1.logInfo("ignoring delete");
             return null;
         }
         if (!change.before.exists && change.after.exists) {
-            log_1.logInfo('process create');
+            log_1.logInfo("process create");
             return processCreate(change.after);
         }
         const payload = change.after.data();
-        log_1.logInfo('processing update');
+        log_1.logInfo("processing update");
         switch (payload.delivery.state) {
             case "SUCCESS":
             case "ERROR":
-                log_1.logInfo('current state is SUCCESS/ERROR');
+                log_1.logInfo("current state is SUCCESS/ERROR");
                 return null;
             case "PROCESSING":
-                log_1.logInfo('current state is PROCESSING');
+                log_1.logInfo("current state is PROCESSING");
                 if (payload.delivery.leaseExpireTime.toMillis() < Date.now()) {
                     return db.runTransaction((transaction) => {
                         transaction.update(change.after.ref, {
@@ -135,7 +135,7 @@ function processWrite(change) {
                 return null;
             case "PENDING":
             case "RETRY":
-                log_1.logInfo('current state is PENDING/RETRY');
+                log_1.logInfo("current state is PENDING/RETRY");
                 yield db.runTransaction((transaction) => {
                     transaction.update(change.after.ref, {
                         "delivery.state": "PROCESSING",
@@ -143,7 +143,7 @@ function processWrite(change) {
                     });
                     return Promise.resolve();
                 });
-                log_1.logInfo('record set to PROCESSING state, trying to deliver the message');
+                log_1.logInfo("record set to PROCESSING state, trying to deliver the message");
                 return deliver(payload, change.after.ref);
         }
     });
@@ -154,7 +154,7 @@ exports.processQueue = functions.handler.firestore.document.onWrite((change) => 
         yield processWrite(change);
     }
     catch (err) {
-        log_1.logWarn('unexpected error during execution: ', err);
+        log_1.logWarn("unexpected error during execution: ", err);
         return null;
     }
 }));

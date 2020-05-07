@@ -1,6 +1,9 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
-import messagebird, { StartConversationParameter, MessageBird } from "messagebird";
+import messagebird, {
+  StartConversationParameter,
+  MessageBird,
+} from "messagebird";
 
 import config from "./config";
 import { logInfo, logWarn } from "./log";
@@ -27,13 +30,13 @@ let initialized = false;
 function initialize() {
   if (initialized === true) return;
   initialized = true;
-  logInfo('initializing app...')
+  logInfo("initializing app...");
   admin.initializeApp();
-  logInfo('initializing db...')
+  logInfo("initializing db...");
   db = admin.firestore();
-  logInfo('initializing mb api client...')
+  logInfo("initializing mb api client...");
   mb = messagebird(config.accessKey);
-  logInfo('initialization finished successfuly')
+  logInfo("initialization finished successfuly");
 }
 
 async function deliver(
@@ -46,7 +49,7 @@ async function deliver(
     "delivery.error": null,
     "delivery.leaseExpireTime": null,
   };
-  logInfo('delivery attempt')
+  logInfo("delivery attempt");
 
   try {
     if (!payload.channelId) {
@@ -54,30 +57,32 @@ async function deliver(
     }
 
     if (!payload.to) {
-      throw new Error("Failed to deliver message. Recipient of the message should be filled.");
+      throw new Error(
+        "Failed to deliver message. Recipient of the message should be filled."
+      );
     }
 
     if (!payload.content) {
       throw new Error("Failed to deliver message. Message content is empty.");
     }
 
-    logInfo(`sending message to channelId: ${payload.channelId}`)
-    logInfo(`with content:`, payload.content)
+    logInfo(`sending message to channelId: ${payload.channelId}`);
+    logInfo(`with content:`, payload.content);
 
     await new Promise((resolve, reject) => {
-      mb.conversations.start(payload, function (err, response) {
+      mb.conversations.start(payload, function(err, response) {
         if (err) {
-          logWarn(`send failed, got error: ${err}`)
+          logWarn(`send failed, got error: ${err}`);
           return reject(err);
         }
-        logInfo(`send successfully scheduled, got response: ${response}`)
+        logInfo(`send successfully scheduled, got response: ${response}`);
         update["messageId"] = response.id;
         update["delivery.state"] = "SUCCESS";
         resolve();
       });
     });
   } catch (e) {
-    logInfo(`updating delivery record with error message`)
+    logInfo(`updating delivery record with error message`);
     update["delivery.state"] = "ERROR";
     update["delivery.error"] = e.toString();
   }
@@ -89,7 +94,7 @@ async function deliver(
 }
 
 async function processCreate(snap: FirebaseFirestore.DocumentSnapshot) {
-  logInfo('new msg added, init delivery object for it')
+  logInfo("new msg added, init delivery object for it");
   return db.runTransaction((transaction) => {
     transaction.update(snap.ref, {
       delivery: {
@@ -103,28 +108,30 @@ async function processCreate(snap: FirebaseFirestore.DocumentSnapshot) {
   });
 }
 
-async function processWrite(change: functions.Change<functions.firestore.DocumentSnapshot>) {
-  logInfo('processing write')
+async function processWrite(
+  change: functions.Change<functions.firestore.DocumentSnapshot>
+) {
+  logInfo("processing write");
   if (!change.after.exists) {
-    logInfo('ignoring delete')
+    logInfo("ignoring delete");
     return null;
   }
 
   if (!change.before.exists && change.after.exists) {
-    logInfo('process create')
+    logInfo("process create");
     return processCreate(change.after);
   }
 
   const payload = change.after.data() as QueuePayload;
-  logInfo('processing update')
+  logInfo("processing update");
 
   switch (payload.delivery.state) {
     case "SUCCESS":
     case "ERROR":
-      logInfo('current state is SUCCESS/ERROR')
+      logInfo("current state is SUCCESS/ERROR");
       return null;
     case "PROCESSING":
-      logInfo('current state is PROCESSING')
+      logInfo("current state is PROCESSING");
       if (payload.delivery.leaseExpireTime.toMillis() < Date.now()) {
         return db.runTransaction((transaction) => {
           transaction.update(change.after.ref, {
@@ -137,7 +144,7 @@ async function processWrite(change: functions.Change<functions.firestore.Documen
       return null;
     case "PENDING":
     case "RETRY":
-      logInfo('current state is PENDING/RETRY')
+      logInfo("current state is PENDING/RETRY");
       await db.runTransaction((transaction) => {
         transaction.update(change.after.ref, {
           "delivery.state": "PROCESSING",
@@ -147,7 +154,7 @@ async function processWrite(change: functions.Change<functions.firestore.Documen
         });
         return Promise.resolve();
       });
-      logInfo('record set to PROCESSING state, trying to deliver the message')
+      logInfo("record set to PROCESSING state, trying to deliver the message");
       return deliver(payload, change.after.ref);
   }
 }
@@ -158,7 +165,7 @@ export const processQueue = functions.handler.firestore.document.onWrite(
     try {
       await processWrite(change);
     } catch (err) {
-      logWarn('unexpected error during execution: ', err);
+      logWarn("unexpected error during execution: ", err);
       return null;
     }
   }

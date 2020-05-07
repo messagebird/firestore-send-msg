@@ -27,13 +27,13 @@ let initialized = false;
 function initialize() {
   if (initialized === true) return;
   initialized = true;
-  logInfo('initializing app...')
+  logInfo("initializing app...");
   admin.initializeApp();
-  logInfo('initializing db...')
+  logInfo("initializing db...");
   db = admin.firestore();
-  logInfo('initializing messagebird client...')
+  logInfo("initializing messagebird client...");
   mb = messagebird(config.accessKey);
-  logInfo('initialization finished successfuly')
+  logInfo("initialization finished successfuly");
 }
 
 async function deliver(
@@ -60,15 +60,14 @@ async function deliver(
           return reject(err);
         }
         // TODO: update delivery state when message delivered or delivery failed, we may need to use status URL for this
-        logInfo(`send successfully scheduled, got response: `, response)
+        logInfo(`send successfully scheduled, got response: `, response);
         update["messageId"] = response.id;
         update["delivery.state"] = "SUCCESS";
         resolve();
       });
-    })
-
+    });
   } catch (e) {
-    logInfo(`updating delivery record with error message`)
+    logInfo(`updating delivery record with error message`);
     update["delivery.state"] = "ERROR";
     update["delivery.error"] = e.toString();
   }
@@ -80,7 +79,7 @@ async function deliver(
 }
 
 async function processCreate(snap: FirebaseFirestore.DocumentSnapshot) {
-  logInfo('new msg added, init delivery object for it')
+  logInfo("new msg added, init delivery object for it");
   return admin.firestore().runTransaction((transaction) => {
     transaction.update(snap.ref, {
       delivery: {
@@ -94,29 +93,34 @@ async function processCreate(snap: FirebaseFirestore.DocumentSnapshot) {
   });
 }
 
-async function processWrite(change: functions.Change<functions.firestore.DocumentSnapshot>) {
-  logInfo('processing write')
+async function processWrite(
+  change: functions.Change<functions.firestore.DocumentSnapshot>
+) {
+  logInfo("processing write");
   if (!change.after.exists) {
-    logInfo('ignoring delete')
+    logInfo("ignoring delete");
     return null;
   }
 
   if (!change.before.exists && change.after.exists) {
-    logInfo('process create')
+    logInfo("process create");
     return processCreate(change.after);
   }
 
-  logInfo('processing update')
+  logInfo("processing update");
   const payload = change.after.data() as QueuePayload;
 
   switch (payload.delivery.state) {
     case "SUCCESS":
     case "ERROR":
-      logInfo('current state is SUCCESS/ERROR')
+      logInfo("current state is SUCCESS/ERROR");
       return null;
     case "PROCESSING":
-      logInfo('current state is PROCESSING')
-      if (payload.delivery.leaseExpireTime && payload.delivery.leaseExpireTime.toMillis() < Date.now()) {
+      logInfo("current state is PROCESSING");
+      if (
+        payload.delivery.leaseExpireTime &&
+        payload.delivery.leaseExpireTime.toMillis() < Date.now()
+      ) {
         return admin.firestore().runTransaction((transaction) => {
           transaction.update(change.after.ref, {
             "delivery.state": "ERROR",
@@ -128,7 +132,7 @@ async function processWrite(change: functions.Change<functions.firestore.Documen
       return null;
     case "PENDING":
     case "RETRY":
-      logInfo('current state is PENDING/RETRY')
+      logInfo("current state is PENDING/RETRY");
       await admin.firestore().runTransaction((transaction) => {
         transaction.update(change.after.ref, {
           "delivery.state": "PROCESSING",
@@ -138,7 +142,7 @@ async function processWrite(change: functions.Change<functions.firestore.Documen
         });
         return Promise.resolve();
       });
-      logInfo('record set to PROCESSING state, trying to deliver the message')
+      logInfo("record set to PROCESSING state, trying to deliver the message");
       return deliver(payload, change.after.ref);
   }
 }
@@ -149,7 +153,7 @@ export const processQueue = functions.handler.firestore.document.onWrite(
     try {
       await processWrite(change);
     } catch (err) {
-      logWarn('unexpected error during execution: ', err);
+      logWarn("unexpected error during execution: ", err);
       return null;
     }
   }

@@ -1,10 +1,9 @@
+import * as firebase from "@firebase/testing";
 
-import * as firebase from '@firebase/testing';
-
-const projectId = 'sms-example'
+const projectId = "sms-example";
 const app = firebase.initializeTestApp({
   projectId,
-  auth: { uid: "alice", email: "alice@example.com" }
+  auth: { uid: "alice", email: "alice@example.com" },
 });
 const db = app.firestore();
 
@@ -17,27 +16,27 @@ describe.skip("firestore-send-sms integration test", () => {
   });
 
   afterAll(async () => {
-    await Promise.all(firebase.apps().map(app => app.delete()));
+    await Promise.all(firebase.apps().map((app) => app.delete()));
   });
 
   it("add to sms collection triggers processQueue function", async () => {
     // add new message to collection
-    await db.collection('sms').add({
-      body: 'test message content',
-      originator: 'JestTest',
-      recipients: ['+380973139857'],
+    await db.collection("sms").add({
+      body: "test message content",
+      originator: "JestTest",
+      recipients: ["+380973139857"],
     });
 
     // wait for extension to trigger
     await new Promise((r) => setTimeout(r, 2000));
 
     // should update delivery with state
-    let allMsgs = await db.collection('sms').get();
-    for(const doc of allMsgs.docs) {
-      const data = doc.data()
-      expect(data).toHaveProperty('delivery');
-      expect(data.delivery).toHaveProperty('state');
-      expect(data.delivery.state).toEqual('SUCCESS');
+    let allMsgs = await db.collection("sms").get();
+    for (const doc of allMsgs.docs) {
+      const data = doc.data();
+      expect(data).toHaveProperty("delivery");
+      expect(data.delivery).toHaveProperty("state");
+      expect(data.delivery.state).toEqual("SUCCESS");
     }
   });
 });

@@ -5,7 +5,7 @@
     "noImplicitReturns": true,
     "sourceMap": false,
     "target": "es6",
-    "esModuleInterop": true,
+    "esModuleInterop": true
   },
   "compileOnSave": true,
   "exclude": ["node_modules"]
