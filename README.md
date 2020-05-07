@@ -1,5 +1,5 @@
 # MessageBird Firebase Extensions
-![MB Firebase extensions Action](https://github.com/messagebird/firebase-extensions/workflows/MB Firebase%20extensions%20Action/badge.svg)
+![MB Firebase extensions Action](https://github.com/messagebird/firebase-extensions/workflows/MB%20Firebase%20extensions%20Action/badge.svg)
 
 This repository contains the source for MessageBird Firebase Extensions. 
 
