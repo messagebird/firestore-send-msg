@@ -4,7 +4,7 @@
     "module": "commonjs",
     "noImplicitReturns": true,
     "sourceMap": false,
-    "target": "es6",
+    "target": "es5",
     "esModuleInterop": true
   },
   "compileOnSave": true,
