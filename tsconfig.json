@@ -5,8 +5,10 @@
     "noImplicitReturns": true,
     "sourceMap": false,
     "target": "es6",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "outDir": "functions/lib"
   },
   "compileOnSave": true,
+  "include": ["functions/src"],
   "exclude": ["node_modules"]
 }
