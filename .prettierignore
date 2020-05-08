@@ -1,4 +1,5 @@
 package.json
+jest.config.js
 extension.yaml
 package-lock.json
 
