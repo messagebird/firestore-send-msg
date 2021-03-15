@@ -36,7 +36,7 @@ function initialize() {
   db = admin.firestore();
   logInfo("initializing mb api client...");
   mb = messagebird(config.accessKey);
-  logInfo("initialization finished successfuly");
+  logInfo("initialization finished successfully");
 }
 
 async function deliver(
@@ -69,7 +69,7 @@ async function deliver(
     logInfo(`sending message to channelId: ${payload.channelId}`);
     logInfo(`with content:`, payload.content);
 
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       mb.conversations.start(payload, function (err, response) {
         if (err) {
           logWarn(`send failed, got error: ${err}`);
