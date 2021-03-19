@@ -1,5 +1,6 @@
 {
-  "name": "firestore-send-msg",
+  "name": "firestore-messagebird-send-msg",
+  "main": "functions/lib/index.js",
   "version": "1.0.0",
   "description": "Repository of MessageBird Firebase Extension to send Omnichannel messages.",
   "private": true,
@@ -12,11 +13,11 @@
     "test": "jest",
     "test-watch": "jest --watch",
     "test-coverage": "jest --coverage",
-    "postinstall": "npm run clean && npm run build",
     "generate-readme": "firebase ext:info . --markdown > README.md"
   },
   "repository": "https://github.com/messagebird/firestore-send-msg",
   "author": "MessageBird (https://messagebird.com/)",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/messagebird/firestore-send-msg/issues"
   },

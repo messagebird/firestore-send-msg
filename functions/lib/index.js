@@ -53,7 +53,7 @@ function initialize() {
     db = admin.firestore();
     log_1.logInfo("initializing mb api client...");
     mb = messagebird_1.default(config_1.default.accessKey);
-    log_1.logInfo("initialization finished successfuly");
+    log_1.logInfo("initialization finished successfully");
 }
 function deliver(payload, ref) {
     return __awaiter(this, void 0, void 0, function* () {
