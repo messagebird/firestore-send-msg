@@ -1,4 +1,4 @@
-# Trigger Omnichannel Message
+# Send Omnichannel Message
 
 ![ci](https://github.com/messagebird/firebase-extensions/workflows/ci/badge.svg)
 
