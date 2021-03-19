@@ -19,7 +19,7 @@ Add new document to FireStore messages collection and we will deliver it for you
 1. Click Start Collection.
 1. And add first document:
 
-```json
+```js
 {
   channelId: 'YOUR_CHANNEL_ID',
   type: 'text',
