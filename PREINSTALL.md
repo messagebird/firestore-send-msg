@@ -13,7 +13,7 @@ You must also have a MessageBird account and a [MessageBird API access key](http
 
 ### To get api access key
 
-1. Create MessageBird account on [Messagebird dashboard page](https://dashboard.messagebird.com/)
+1. Create MessageBird account on [MessageBird dashboard page](https://dashboard.messagebird.com/)
 1. Get your API key on [Developer settings page](https://dashboard.messagebird.com/en/developers/access)
 1. Setup channels that you plan to use on [Channels page](https://dashboard.messagebird.com/en/channels)
 
