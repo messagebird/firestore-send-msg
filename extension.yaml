@@ -6,6 +6,8 @@ displayName: Send Omnichannel Message
 description:
   Sends Omnichannel message based on the contents of a document written to a specified Cloud Firestore collection.
 
+license: Apache-2.0
+
 sourceUrl: https://github.com/messagebird/firestore-send-msg
 releaseNotesUrl: https://github.com/messagebird/firestore-send-msg/CHANGELOG.md
 
