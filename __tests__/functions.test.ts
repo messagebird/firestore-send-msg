@@ -47,7 +47,7 @@ jest.mock("messagebird", () => () => ({
   },
 }));
 
-describe("firestore-send-msg", () => {
+describe("firestore-messagebird-send-msg", () => {
   beforeEach(() => {
     updateMock.mockReset();
   });

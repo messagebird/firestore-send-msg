@@ -9,7 +9,7 @@ const db = app.firestore();
 
 // you need to have firebase emulator runnning for this tests
 // firebase ext:dev:emulators:start --test-params=./test-params.env --project=conversations-example
-describe.skip("firestore-send-msg integration test", () => {
+describe.skip("firestore-messagebird-send-msg integration test", () => {
   beforeEach(async () => {
     // Clean database before each test
     await firebase.clearFirestoreData({ projectId });

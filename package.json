@@ -1,5 +1,5 @@
 {
-  "name": "firestore-send-msg",
+  "name": "firestore-messagebird-send-msg",
   "main": "functions/lib/index.js",
   "version": "1.0.0",
   "description": "Repository of MessageBird Firebase Extension to send Omnichannel messages.",
