@@ -9,7 +9,7 @@ Before you can use this extension, follow these steps to set required parameters
 1. Set your "Collection Name" that you plan to use for writing messages or leave it with default name.
 1. Click **Save**.
 
-# See it in action
+## See it in action
 
 You can test out this extension right away!
 
@@ -17,7 +17,7 @@ Add new document to FireStore messages collection and we will deliver it for you
 
 1. Go to Database for your project in the [Google Cloud console](https://console.firebase.google.com/project/${PROJECT_ID}/database/).
 1. Click Start Collection.
-1. And add first document: 
+1. And add first document:
 
 ```json
 {
@@ -30,7 +30,7 @@ Add new document to FireStore messages collection and we will deliver it for you
 }
 ```
 
-# Using the extension
+## Using the extension
 
 When triggered by write to specific firestore collection, this extension will then automatically use MessageBird API to deliver your message.
 
@@ -47,6 +47,6 @@ To learn more about how you can write data to Firestore collections read [firest
 });
 ```
 
-# Monitoring
+## Monitoring
 
 As a best practice, you can [monitor the activity](https://firebase.google.com/docs/extensions/manage-installed-extensions#monitor) of your installed extension, including checks on its health, usage, and logs.
