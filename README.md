@@ -1,8 +1,9 @@
-# Send Omnichannel Message
+# Send messages with MessageBird
 
 ![ci](https://github.com/messagebird/firebase-extensions/workflows/ci/badge.svg)
 
-**Description**: Sends Omnichannel message based on the contents of a document written to a specified Cloud Firestore collection.
+**Description**: Creates and sends messages and notifications using the MessageBird Conversations API.
+Extension is triggered when document written to a specified Cloud Firestore collection. It will try to deliver your message based on document contents and update it with status.
 
 **Configuration Parameters:**
 
