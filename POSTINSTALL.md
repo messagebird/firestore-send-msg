@@ -22,13 +22,40 @@ Add new document to FireStore messages collection and we will deliver it for you
 ```js
 {
   channelId: 'YOUR_CHANNEL_ID',
+  to: 'RECIPIENT_OF_THE_MESSAGE',
   type: 'text',
   content: {
     text: 'YOUR_MESSAGE_CONTENT'
-  },
-  to: 'RECIPIENT_OF_THE_MESSAGE',
+  }
 }
 ```
+
+**Note:** Different documents can be delivered on different channels by changing the channel IDs. You can get the channel ID from your [Channels page](https://dashboard.messagebird.com/en/channels/)
+
+To send WhatsApp HSM:
+
+```js
+{
+  channelId: 'YOUR_WHATSAPP_CHANNEL_ID',
+  to: 'RECIPIENT_OF_THE_MESSAGE(PHONE_NUMBER)',
+  type: 'hsm',
+  content: {
+    hsm: {
+      namespace: 'YOUR_NAMESPACE_ID',
+      templateName: 'YOUR_TEMPLATE_NAME',
+      language: {
+        policy: 'deterministic', 
+        code: 'YOUR_LANG_CODE', 
+      },
+      params: [
+        { default: 'YOUR_PARAM' }
+      ]
+    }
+  }
+}
+```
+
+You can find full list of supported message types and required content fields in our [Conversations API docs](https://developers.messagebird.com/api/conversations/#send-message)
 
 ### Using the extension
 
@@ -37,7 +64,7 @@ When triggered by write to specific Firestore collection, this extension will th
 To learn more about how you can write data to Firestore collections read [firestore documentation](https://firebase.google.com/docs/firestore/manage-data/add-data).
 
 ```typescript
- db.collection('msg').add({
+ db.collection('YOUR_DOCUMENT_COLLECTION').add({
   channelId: 'YOUR_CHANNEL_ID',
   type: 'text',
   content: {
