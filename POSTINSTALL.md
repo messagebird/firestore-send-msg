@@ -3,9 +3,9 @@
 You can test out this extension right away!
 Add a new document to the Firestore messages collection and we will deliver it for you:
 
-1. Go to Database for your project in the [Firestore console](https://console.firebase.google.com/project/${PROJECT_ID}/database/).
-2. Click **Start Collection** (the name of the collection should be the same as the one used in the extension configuration).
-3. And add your first document:
+1. Go to your [Cloud Firestore dashboard](https://console.firebase.google.com/project/${param:PROJECT_ID}/firestore/data) in the Firebase console.
+1. Click **Start Collection** (the name of the collection should be the same as the one used in the extension configuration).
+1. And add your first document:
 
 ```js
 {
