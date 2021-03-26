@@ -1,5 +1,5 @@
 name: firestore-messagebird-send-msg
-version: 0.1.1
+version: 0.1.2
 specVersion: v1beta
 
 displayName: Send messages with MessageBird
@@ -8,7 +8,7 @@ description:
 
 license: Apache-2.0
 
-sourceUrl: https://github.com/messagebird/firestore-send-msg
+sourceUrl: https://github.com/messagebird/firestore-send-msg/tree/master
 releaseNotesUrl: https://github.com/messagebird/firestore-send-msg/CHANGELOG.md
 
 author:
@@ -126,4 +126,4 @@ params:
       - label: warning
         value: warn
     default: warn
-    required: true
+    required: false
