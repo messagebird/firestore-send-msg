@@ -116,12 +116,14 @@ params:
       What is the path to the collection that contains the documents used to build and send the messages?
 
   - param: LOG_LEVEL
-    type: string
+    type: select
     label: Log level
-    default: warn
-    validationRegex: "^(info|warn)"
-    validationErrorMessage: Must be one of "info"/"warn"
     description: >-
-      Log level, can be one of "info"/"warn", default is "warn"
-    example: info
-    required: false
+      Log level, can be "info" or "warning", default is "warning".
+    options:
+      - label: info
+        value: info
+      - label: warning
+        value: warn
+    default: warn
+    required: true
