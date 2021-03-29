@@ -2,7 +2,7 @@ name: firestore-messagebird-send-msg
 version: 0.1.2
 specVersion: v1beta
 
-displayName: Send messages with MessageBird
+displayName: Send Messages with MessageBird
 description:
   Sends messages and notifications using the MessageBird Conversations API
 

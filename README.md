@@ -1,4 +1,4 @@
-# Send messages with MessageBird
+# Send Messages with MessageBird
 
 ![ci](https://github.com/messagebird/firebase-extensions/workflows/ci/badge.svg)
 
