@@ -18,7 +18,7 @@ Add a new document to the Firestore messages collection and we will deliver it f
 }
 ```
 
-**Note:** Different documents can be delivered on different channels by changing the channel IDs. You can get the channel ID from your [Channels page](https://dashboard.messagebird.com/en/channels/)
+**Note:** Different documents can be delivered on different channels by changing the channel IDs. You can get the channel ID from your [Channels page](https://dashboard.messagebird.com/en/channels)
 To send a WhatsApp Template Message:
 
 ```js
