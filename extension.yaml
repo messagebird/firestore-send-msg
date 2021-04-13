@@ -101,7 +101,8 @@ params:
     type: string
     label: MessageBird Access Key
     description: >-
-      A MessageBird's REST api access key
+      A MessageBird's REST api access key. For help creating an access key, refer to the 
+      [API access key guide](https://support.messagebird.com/hc/en-us/articles/360001853998-Creating-access-keys). 
     example: ZYpqq7LUUd8ZhfwodPMeilZSK
     required: true
 
