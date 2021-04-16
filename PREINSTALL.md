@@ -14,7 +14,7 @@ When adding a document to a specific Firestore collection, this extension will u
 
 **Note:** You can find full list of supported message types and required content fields in the [Conversations API docs](https://developers.messagebird.com/api/conversations/#send-message).
 
-## Additional setup
+#### Additional setup
 
 Before installing this extension, set up the following Firebase services in your Firebase project:
 
@@ -23,7 +23,7 @@ Before installing this extension, set up the following Firebase services in your
 You must have a [MessageBird account](https://messagebird.com/en/) and a [MessageBird API access key](https://support.messagebird.com/hc/en-us/articles/360001853998-Creating-access-keys) before installing this extension.
 You will also need to create the appropriate channels (an SMS channel, a WhatsApp channel, a Facebook Messenger channel, a Telegram channel, etc.) that you'd like to use to send out messages as you will need to specify the channel when sending messages.
 
-### Step by step MessageBird account setup
+#### Step by step MessageBird account setup
 
 - Create a MessageBird account on the [MessageBird page](https://dashboard.messagebird.com/en/sign-up?), and when asked, choose the "APIs" path
 - Once your account is created, you can see your API key either on the [dashboard](https://dashboard.messagebird.com/) or in the [Developer settings](https://dashboard.messagebird.com/en/developers/access) page.
