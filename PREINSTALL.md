@@ -34,13 +34,21 @@ You will also need to create the appropriate channels (an SMS channel, a WhatsAp
 
 **Note:** MessageBird also has a [test mode](https://support.messagebird.com/hc/en-us/articles/360000670709-What-is-the-difference-between-a-live-key-and-a-test-key-) that lets you make API calls without sending actual messages. You can use it for testing purposes to avoid extra cost during development.
 
-## Billing
+#### Billing
 
-This extension uses the MessageBird Conversations API to deliver your messages, so [transactional fees](https://messagebird.com/en/pricing/api) will be applied once the test credits run out.
-This extension also uses other Firebase or Google Cloud Platform services which may have associated charges:
+This extension uses the following Firebase services which may have associated charges:
 
-1. Cloud Functions
-2. Cloud Firestore
+- Cloud Firestore
+- Cloud Functions
 
-When you use Firebase Extensions, you're only charged for the underlying resources that you use.
-A paid-tier billing plan is only required if the extension uses a service that requires a paid-tier plan, for example calling to a Google Cloud Platform API or making outbound network requests to non-Google services. All Firebase services offer a free tier of usage. [Learn more about Firebase billing.](https://firebase.google.com/pricing)
+This extension also uses the following third-party services:
+
+- MessageBird Billing ([pricing information](https://www.messagebird.com/pricing))
+
+You are responsible for any costs associated with your use of these services.
+
+#### Note from Firebase
+
+To install this extension, your Firebase project must be on the Blaze (pay-as-you-go) plan. You will only be charged for the resources you use. Most Firebase services offer a free tier for low-volume use. [Learn more about Firebase billing.](https://firebase.google.com/pricing)
+
+You will be billed a small amount (typically less than $0.10) when you install or reconfigure this extension. See the [Cloud Functions for Firebase billing FAQ](https://firebase.google.com/pricing) for a detailed explanation.
