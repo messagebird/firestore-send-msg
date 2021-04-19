@@ -29,6 +29,7 @@ You will also need to create the appropriate channels (an SMS channel, a WhatsAp
 - Once your account is created, you can see your API key either on the [dashboard](https://dashboard.messagebird.com/) or in the [Developer settings](https://dashboard.messagebird.com/en/developers/access) page.
 
 You can set up the channels you would like to use on the [Channels page](https://dashboard.messagebird.com/en/channels)
+
  - for SMS you will need to [acquire a sending number](https://support.messagebird.com/hc/en-us/articles/208011689-Buy-a-Virtual-Mobile-Number-VMN-)
  - for WhatsApp you will need to create a WhatsApp for Business Account by following the [WhatsApp installation wizard](https://dashboard.messagebird.com/en/onboarding/wa-api/install-whatsapp). You might also need to create an [WhatsApp message template](https://dashboard.messagebird.com/en/whatsapp-template-manager) if you want to send [out-of-session WhatsApp messages](https://support.messagebird.com/hc/en-us/articles/360004817257-What-is-the-difference-between-Message-Template-and-Template-Message-).
  - for other channels, follow the instructions on the [Channels page](https://dashboard.messagebird.com/en/channels)
