@@ -1,7 +1,7 @@
 {
   "name": "firestore-messagebird-send-msg",
   "main": "functions/lib/index.js",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Repository of MessageBird Firebase Extension to send Omnichannel messages.",
   "private": true,
   "scripts": {
@@ -25,7 +25,7 @@
     "@types/node": "^14.14.34",
     "firebase-admin": "9.5.0",
     "firebase-functions": "^3.13.2",
-    "messagebird": "^3.6.0"
+    "messagebird": "^3.6.1"
   },
   "devDependencies": {
     "@firebase/testing": "0.20.11",
