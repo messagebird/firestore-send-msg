@@ -52,7 +52,7 @@ function initialize() {
     log_1.logInfo("initializing db...");
     db = admin.firestore();
     log_1.logInfo("initializing mb api client...");
-    mb = messagebird_1.default(config_1.default.accessKey);
+    mb = messagebird_1.default(config_1.default.accessKey, undefined, ["ENABLE_FIREBASE_PLUGIN"]);
     log_1.logInfo("initialization finished successfully");
 }
 function deliver(payload, ref) {
