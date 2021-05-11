@@ -1,5 +1,5 @@
 Use this extension to send omnichannel messages (SMS, WhatsApp, Google's Business Messages, Messenger, Telegram, Line, Viber, etc.) with [MessageBird](https://messagebird.com/).
-When adding a document to a specific Firestore collection, this extension will use the MessageBird Conversations API to deliver convert that document to a message and it will update the document with the delivery status.
+When a document is added to a specific Firestore collection, this extension will use the MessageBird Conversations API to convert that document to a message and update the document with the delivery status.
 
 ```js
  db.collection('YOUR_DOCUMENT_COLLECTION').add({
