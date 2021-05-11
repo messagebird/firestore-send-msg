@@ -7,7 +7,7 @@ const app = firebase.initializeTestApp({
 });
 const db = app.firestore();
 
-// you need to have firebase emulator runnning for this tests
+// you need to have firebase emulator running for this tests
 // firebase ext:dev:emulators:start --test-params=./test-params.env --project=conversations-example
 describe.skip("firestore-messagebird-send-msg integration test", () => {
   beforeEach(async () => {
