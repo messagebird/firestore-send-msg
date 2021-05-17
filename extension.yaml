@@ -4,7 +4,7 @@ specVersion: v1beta
 
 displayName: Send Messages with MessageBird
 description:
-  Sends messages and notifications using the MessageBird Conversations API
+  Sends messages and notifications using the MessageBird Conversations API.
 
 license: Apache-2.0
 
