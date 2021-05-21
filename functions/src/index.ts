@@ -127,6 +127,7 @@ async function processWrite(
 
   if (!payload.delivery) {
     logInfo("ignoring empty delivery update");
+    return null;
   }
 
   switch (payload.delivery.state) {
