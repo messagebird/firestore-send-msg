@@ -125,6 +125,10 @@ async function processWrite(
   const payload = change.after.data() as QueuePayload;
   logInfo("processing update");
 
+  if (!payload.delivery) {
+    logInfo("ignoring empty delivery update");
+  }
+
   switch (payload.delivery.state) {
     case "SUCCESS":
     case "ERROR":
