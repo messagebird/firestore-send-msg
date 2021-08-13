@@ -129,6 +129,10 @@ function processWrite(change) {
         }
         const payload = change.after.data();
         log_1.logInfo("processing update");
+        if (!payload.delivery) {
+            log_1.logInfo("ignoring empty delivery update");
+            return null;
+        }
         switch (payload.delivery.state) {
             case "SUCCESS":
             case "ERROR":
