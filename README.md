@@ -5,6 +5,10 @@
 **Description**: Creates and sends messages and notifications using the MessageBird Conversations API.
 Extension is triggered when document written to a specified Cloud Firestore collection. It will try to deliver your message based on document contents and update it with status.
 
+**Tutorial:**
+
+For a detailed run through in how to install and use the extension please see the following [blog post](https://blog.messagebird.com/posts/get-started-with-the-messagebird-extension-on-firebase).
+
 **Configuration Parameters:**
 
 * Cloud Functions location: Where do you want to deploy the functions created for this extension? You usually want a location close to your database. For help selecting a location, refer to the [location selection guide](https://firebase.google.com/docs/functions/locations).
