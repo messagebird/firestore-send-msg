@@ -26,6 +26,10 @@ contributors:
   
 billingRequired: true
 
+externalServices:
+  - name: MessageBird
+    pricingUri: https://messagebird.com/pricing
+
 roles:
   - role: datastore.user
     reason: Allows this extension to access Cloud Firestore to read and process added documents.
