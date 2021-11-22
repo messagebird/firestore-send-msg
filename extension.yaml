@@ -104,7 +104,7 @@ params:
     immutable: true
 
   - param: ACCESS_KEY
-    type: string
+    type: secret
     label: MessageBird Access Key
     description: >-
       A MessageBird's REST api access key. For help creating an access key, refer to the 
